@@ -67,5 +67,9 @@ class User extends Authenticatable
         return $this->hasMany(Follow::class, 'user_id');
     }
 
-    
+    public function feedPosts() {
+        // $followingUsers = $this->followingTheseUsers()->pluck('followeduser');
+        // return Post::whereIn('user_id', $followingUsers)->orWhere('user_id', $this->id)->latest();
+        return $this->hasManyThrough(Post::class, Follow::class, 'user_id', 'user_id', 'id', 'followeduser');
+    }
 }
