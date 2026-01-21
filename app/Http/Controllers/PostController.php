@@ -10,6 +10,17 @@ class PostController extends Controller
 {
     //
 
+    public function search($term)
+    {
+        $posts = Post::search($term)->get();
+        // foreach ($posts as $post) {
+        //     $post->body = strip_tags(Str::markdown($post->body), '<p><br><strong><em><ul><ol><li>,<h1><h2><h3><h4><h5><h6>');
+        // }
+        //return view('search-results', ['posts' => $posts, 'term' => $term]);
+        $posts->load('user:id,username,avatar');
+        return $posts;
+    }
+
     public function showEditForm(Post $post)
     {
         return view('edit-post', ['post' => $post]);

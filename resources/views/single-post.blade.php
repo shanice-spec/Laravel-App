@@ -1,4 +1,5 @@
-<x-layout>
+{{-- A simple string of text as the title does not need the ":" before doctitle --}}
+<x-layout :doctitle="$post->title">
     <div class="container py-md-5 container--narrow">
       <div class="d-flex justify-content-between">
         <h2>{{ $post->title }}</h2>
