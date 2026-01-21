@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\ChatMessage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
@@ -41,3 +43,31 @@ Route::get('/profile/{user:username}/following', [UserController::class, 'profil
 Route::post('/create-follow/{user:username}', [FollowController::class, 'createFollow'])->middleware('mustBeLoggedIn');
 Route::post('/remove-follow/{user:username}', [FollowController::class, 'removeFollow'])->middleware('mustBeLoggedIn');
 
+//Chat Routes
+Route::post('/send-chat-message', function(Request $request){
+    $incomingFields = $request->validate([
+        'textvalue' => ['required', 'max:1000']
+    ]);
+
+    $textvalue = trim(strip_tags($incomingFields['textvalue']));
+
+    if($textvalue === '') {
+        return response()->noContent();
+    }
+
+    broadcast(new ChatMessage([
+        'username' => auth()->user()->username,
+        'avatar' => auth()->user()->avatar,
+        'textvalue' => $textvalue
+    ]))->toOthers();
+
+    return response()->noContent();
+
+    // $user = auth()->user();
+
+    // event(new \App\Events\ChatMessageEvent([
+    //     'username' => $user->username,
+    //     'avatar' => $user->avatar,
+    //     'message' => $incomingFields['textvalue']
+    // ]));
+})->middleware('mustBeLoggedIn');
